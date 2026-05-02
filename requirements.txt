@@ -259,12 +259,14 @@ simplejson==3.17.6
 six==1.16.0
 soupsieve==2.3.1
 srbtok @ file:///home/goku/git/serbian-tokenizer/dist/srbtok-0.1.0-py3-none-any.whl#sha256=ae328f1aa777aaaf8288c192ae3714f7287d4632ddbab97e0cb02fba5864362c
+srtools==0.1.13
 ssh-import-id==5.11
 super-image==0.2.0
 supervision==0.27.0.post1
 support-developer==1.0.5
 sympy==1.14.0
 systemd-python==234
+tabulate==0.10.0
 termcolor==2.2.0
 terminaltables==3.1.10
 tiktoken==0.5.1

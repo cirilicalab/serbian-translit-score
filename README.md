@@ -18,11 +18,11 @@
 ### Излази
 ```
 out/results.tsv
+out/results.md
 ```
 
-```tsv
-tool	dataset	alphabet	wer	cer	#words	wins	wsub	wdel	#chars	cins	csub	cdel
-srtools	tiny	lat	2.36	1.02	806	0	19	0	5090	0	52	0
-srtools	tiny	eng	18.36	3.71	806	0	148	0	5090	6	183	0
-srtools	tiny	eng2	18.36	6.17	806	0	148	0	5090	131	183	0
-```
+| tool    | dataset   | alphabet   |   wer |   cer |   #words |   wins |   wsub |   wdel |   #chars |   cins |   csub |   cdel |
+|---------|-----------|------------|-------|-------|----------|--------|--------|--------|----------|--------|--------|--------|
+| srtools | tiny      | lat        |  2.36 |  1.02 |      806 |      0 |     19 |      0 |     5090 |      0 |     52 |      0 |
+| srtools | tiny      | eng        | 18.36 |  3.71 |      806 |      0 |    148 |      0 |     5090 |      6 |    183 |      0 |
+| srtools | tiny      | eng2       | 18.36 |  6.17 |      806 |      0 |    148 |      0 |     5090 |    131 |    183 |      0 |

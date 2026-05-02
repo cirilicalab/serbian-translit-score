@@ -12,6 +12,7 @@ data_root=${script_dir}/../datasets
 out_root=${script_dir}/../out
 tools_dir=${script_dir}/../tools
 results_file=${out_root}/results.tsv
+results_file_github=${out_root}/results.md
 score="python3 ${tools_dir}/score.py"
 
 
@@ -75,8 +76,15 @@ function eval_all_datasets_and_alphabets()
     eval_all_alphabets ${trans_tool} "tiny"
 }
 
+# make sure that we have output dir
 mkdir -p ${out_root}
+
+# add row with column names to results summary TSV table
 col_names=$(${score} title)
 printf "tool\tdataset\talphabet\t${col_names}\n" > ${results_file}
 
+# evaluate all
 eval_all_datasets_and_alphabets srtools
+
+# format output table as github markdown
+cat ${results_file} | tabulate --header -f github > ${results_file_github}
