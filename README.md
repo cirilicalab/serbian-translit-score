@@ -21,10 +21,6 @@ out/results.tsv
 out/results.md
 ```
 
-<style scoped>
-    table { font-size: 13px;}
-</style>
-
 | tool    | dataset   | alphabet   |   wer |   cer |   #words |   wins |   wsub |   wdel |   #chars |   cins |   csub |   cdel |
 |---------|-----------|------------|-------|-------|----------|--------|--------|--------|----------|--------|--------|--------|
 | srtools | tiny      | lat        |  2.36 |  1.02 |      806 |      0 |     19 |      0 |     5090 |      0 |     52 |      0 |
