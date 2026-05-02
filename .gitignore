@@ -3,6 +3,12 @@ lat/
 eng/
 eng2/
 
+# ignore vscode stuff
+.vscode/
+
 # ignore python stuff
 .venv/
 __pycache__/
+
+# ignore output files
+out/

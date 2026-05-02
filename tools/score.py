@@ -16,9 +16,11 @@ import Levenshtein
 #   cer : character error rate
 #
 
+g_output_level=0
+
 def parse_args():
     parser = argparse.ArgumentParser("Computes score of Serbian Latin to Serbian Cyrillic transliteration.")
-    parser.add_argument("mode", required=True, choices=["file", "dir"], 
+    parser.add_argument("mode", choices=["file", "dir", "title"], 
                         help="Selects scoring mode. Use 'file' to score individual files, use 'dir' to score all files within directory")
     parser.add_argument("-a", "--act", required=False, help="Path to actual transliterator output.")
     parser.add_argument("-e", "--exp", required=False, help="Path to expected output.")
@@ -116,8 +118,10 @@ def dir_counts(exp_dir, act_dir, file2seq_func):
     """
     results = []
     for filename in os.listdir(exp_dir):
-        act_path = os.path.join(act_dir, filename)
         exp_path = os.path.join(exp_dir, filename)
+        if not os.path.isfile(exp_path):
+            continue
+        act_path = os.path.join(act_dir, filename)
         
         if not os.path.isfile(act_path):
             sys.stderr("Skipping file because no transcription was found: %s" % filename)
@@ -137,16 +141,24 @@ def summarize_counts(counts_list):
     return total_counts
 
 
+def safe_div(a, b):
+    if b == 0 and a >= 0:
+        return float('inf')
+    elif b == 0 and a < 0:
+        return float('-inf')
+    else:
+        return a / b;
+
 def compute_error(counts):
     error_count = counts.i + counts.s + counts.d
-    return error_count / counts.t
+    return safe_div(error_count, counts.t)
 
 
 def err_str(err):
     return "%.2f" % (100 * err)
 
 
-def print_result(word_counts, char_counts, print_col_names=True):
+def print_result(word_counts, char_counts, print_col_names=True, print_results=True):
     # compute character error rate
     cer = compute_error(char_counts)
 
@@ -160,18 +172,21 @@ def print_result(word_counts, char_counts, print_col_names=True):
     col_names.extend(["#words", "wins", "wsub", "wdel"])
     col_values.extend([str(word_counts.t), str(word_counts.i), str(word_counts.s), str(word_counts.d)])
 
-    col_names.extend(["#cords", "cins", "csub", "cdel"])
+    col_names.extend(["#chars", "cins", "csub", "cdel"])
     col_values.extend([str(char_counts.t), str(char_counts.i), str(char_counts.s), str(char_counts.d)])
 
     if print_col_names:
         print("\t".join(col_names))
-    print("\t".join(col_values))
+    if print_results:
+        print("\t".join(col_values))
 
 
 def file_mode(exp_path, act_path):
-    sys.stderr.write("Compare files")
-    sys.stderr.write("    act: %s" % act_path)
-    sys.stderr.write("    exp: %s" % exp_path)
+    if g_output_level > 0:
+        sys.stderr.write("Compare files")
+        sys.stderr.write("    act: %s" % act_path)
+        sys.stderr.write("    exp: %s" % exp_path)
+        sys.stderr.write("\n")
 
     # compute counts
     char_counts = file_counts(act_path, exp_path, file2str)
@@ -182,20 +197,27 @@ def file_mode(exp_path, act_path):
 
 
 def dir_mode(exp_dir, act_dir):
-    sys.stderr.write("Compare files")
-    sys.stderr.write("    act: %s" % act_dir)
-    sys.stderr.write("    exp: %s" % exp_dir)
+    global g_output_level
+    if g_output_level > 0:
+        sys.stderr.write("Compare files")
+        sys.stderr.write("    act: %s" % act_dir)
+        sys.stderr.write("    exp: %s" % exp_dir)
+        sys.stderr.write("\n")
 
     # compute counts
-    char_counts = dir_counts(exp_dir, act_dir, file2str)
-    word_counts = dir_counts(exp_dir, act_dir, file2words)
+    file_and_char_counts_list = dir_counts(exp_dir, act_dir, file2str)
+    file_and_word_counts_list = dir_counts(exp_dir, act_dir, file2words)
+
+    # cumulate counts
+    total_char_counts = summarize_counts([counts for _, counts in file_and_char_counts_list])
+    total_word_counts = summarize_counts([counts for _, counts in file_and_word_counts_list])
 
     # output result
-    print_result(word_counts, char_counts)
+    print_result(total_word_counts, total_char_counts)
 
 
 
-if __name__ == "__name__":
+if __name__ == "__main__":
     args = parse_args()
 
     if args.mode == "file":
@@ -204,6 +226,10 @@ if __name__ == "__name__":
 
     if args.mode == "dir":
         dir_mode(args.exp, args.act)
+        exit()
+
+    if args.mode == "title":
+        print_result(EditCounts(), EditCounts(), print_col_names=True, print_results=False)
         exit()
 
     assert False, "Unknown mode: %s" % (args.mode)
