@@ -24,6 +24,8 @@ function eval()
     dataset=$2
     alphabet=$3
 
+    echo "Evaluate: ${trans_tool} on ${dataset} dataset with ${alphabet} alphabet."
+
     # get dataset root dir
     dataset_dir=${data_root}/${dataset}
 

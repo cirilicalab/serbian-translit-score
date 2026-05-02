@@ -5,7 +5,7 @@
 # https://andrejr.gitlab.io/srtools/
 #
 
-set -xe
+# set -xe
 
 in_file=$1
 out_file=$2
