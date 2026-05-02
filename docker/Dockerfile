@@ -12,7 +12,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN pip3 install --break-system-packages --no-cache-dir \
     Levenshtein==0.27.3 \
     tabulate==0.10.0 \
-    srtools==0.1.13
+    srtools==0.1.13 \
+    cyrtranslit
 
 
 # Set default command
