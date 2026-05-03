@@ -87,6 +87,7 @@ printf "tool\tdataset\talphabet\t${col_names}\n" > ${results_file}
 eval_all_datasets_and_alphabets srtools
 eval_all_datasets_and_alphabets cyrtranslit
 eval_all_datasets_and_alphabets cyrilizer
+eval_all_datasets_and_alphabets srbai
 
 # format output table as github markdown
 cat ${results_file} | tabulate --header -f github > ${results_file_github}

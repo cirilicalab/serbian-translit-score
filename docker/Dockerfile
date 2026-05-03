@@ -8,14 +8,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ruby \
     ruby-dev \
     wget \
-    nodejs npm \
+    git \
+    nodejs \
+    npm \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install --break-system-packages --no-cache-dir \
     Levenshtein==0.27.3 \
     tabulate==0.10.0 \
     srtools==0.1.13 \
-    cyrtranslit
+    cyrtranslit \
+    git+https://github.com/Serbian-AI-Society/SrbAI.git
+
+# RUN pip3 install --break-system-packages git+https://github.com/Serbian-AI-Society/SrbAI.git
 
 
 # Set default command

@@ -1,11 +1,9 @@
 #!/bin/bash
 
 #
-# This is wrapper script for Python srtools module
-# https://andrejr.gitlab.io/srtools/
+# SrbAI transliteration to Cyrillic
+# https://github.com/Serbian-AI-Society/SrbAI
 #
-
-# set -xe
 
 # Check exactly two arguments
 if [ $# -ne 2 ]; then
@@ -20,4 +18,4 @@ fi
 in_file=$1
 out_file=$2
 
-srts --lc $in_file > $out_file
+cat ${in_file} | python3 -c "import sys; from srbai.Alati.Transliterator import transliterate_lat2cir; print(transliterate_lat2cir(sys.stdin.read()))" > ${out_file}
