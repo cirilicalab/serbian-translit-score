@@ -20,8 +20,6 @@ RUN pip3 install --break-system-packages --no-cache-dir \
     cyrtranslit \
     git+https://github.com/Serbian-AI-Society/SrbAI.git
 
-# RUN pip3 install --break-system-packages git+https://github.com/Serbian-AI-Society/SrbAI.git
-
 
 # Set default command
 CMD ["/bin/bash"]
