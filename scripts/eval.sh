@@ -47,9 +47,10 @@ function eval()
     mkdir -p ${out_dir}
 
     # transliterate all files
-    for file in ${files}; do
-        ${script_dir}/translit/${trans_tool}.sh ${in_dir}/${file} ${out_dir}/${file}
-    done
+    # for file in ${files}; do
+    #     ${script_dir}/translit/${trans_tool}.sh ${in_dir}/${file} ${out_dir}/${file}
+    # done
+    parallel -j +100 --will-cite "${script_dir}/translit/${trans_tool}.sh ${in_dir}/{} ${out_dir}/{}" ::: ${files}
 
     ${score} dir --act ${out_dir} --exp ${exp_dir} >> ${out_dir}/results_${alphabet}.txt
 
@@ -73,7 +74,10 @@ function eval_all_datasets_and_alphabets()
 {
     trans_tool=$1
 
-    eval_all_alphabets ${trans_tool} "tiny"
+    for dataset_dir in ${data_root}/*; do
+        dataset_name=$(basename ${dataset_dir})
+        time eval_all_alphabets ${trans_tool} ${dataset_name}
+    done
 }
 
 # make sure that we have output dir

@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     nodejs \
     npm \
+    parallel \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install --break-system-packages --no-cache-dir \
