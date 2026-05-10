@@ -6,13 +6,14 @@ import os
 def parse_args():
     parser = argparse.ArgumentParser("Converts Serbian Cyrillic text to Latin text.", formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument(
-        "-a", "--alphabet", required=True, choices=["lat", "eng", "eng2"], help="Which Latin alphabet should be used for encoding.\n"
+        "-a", "--alphabet", required=True, choices=["lat", "ascii", "tanjug"], help="Which Latin alphabet should be used for encoding.\n"
         "Possible values: \n"
         "  'lat'  : Serbian Latin alphabet (contains letters: đžćčš)\n"
-        "  'eng'  : English Latin alphabet - no diacritics (џ:dj, ж:z, ћ:c, ч:c, ш:s, џ:dz)\n"
-        "  'eng2' : English Latin alphabet - use h instead of diacritic (џ:dj, ж:zh, ћ:ch, ч:ch, ш:sh џ:dz)")
+        "  'ascii'  : ASCII alphabet - no diacritics (ђ:dj, ж:z, ћ:c, ч:c, џ:dz, ш:s, љ:lj, њ:nj)\n"
+        "  'tanjug' : Tanjug coding standard (ђ:dj, ж:zz, ћ:cc, ч:ch, џ:dzz, ш:sh, љ:lj, њ:nj)")
     parser.add_argument("-i", "--in-dir", required=False, help="Directory with input cyrillic files.")
     parser.add_argument("-o", "--out-dir", required=False, help="Output directory with output latin files.")
+    parser.add_argument("-t", "--transliteration-table", action="store_true", help="Report transliteration table for selected alphabet")
     return parser.parse_args()
 
 
@@ -30,16 +31,16 @@ srb_latin_list = [
     "n", "nj", "o", "p", "r", "s", "t", "ć", "u", "f", "h", "c", "č", "dž", "š",
     "A", "B", "V", "G", "D", "Đ", "E", "Ž", "Z", "I", "J", "K", "L", "Lj", "M",
     "N", "Nj", "O", "P", "R", "S", "T", "Ć", "U", "F", "H", "C", "Č", "Dž", "Š"]
-eng_latin_list = [
+ascii_latin_list = [
     "a", "b", "v", "g", "d", "dj", "e", "z", "z", "i", "j", "k", "l", "lj", "m",
     "n", "nj", "o", "p", "r", "s", "t", "c", "u", "f", "h", "c", "c", "dz", "s",
     "A", "B", "V", "G", "D", "Dj", "E", "Z", "Z", "I", "J", "K", "L", "Lj", "M",
     "N", "Nj", "O", "P", "R", "S", "T", "C", "U", "F", "H", "C", "C", "Dz", "S"]
-eng2_latin_list = [
-    "a", "b", "v", "g", "d", "dj", "e", "zh", "z", "i", "j", "k", "l", "lj", "m",
-    "n", "nj", "o", "p", "r", "s", "t", "ch", "u", "f", "h", "c", "ch", "dz", "sh",
-    "A", "B", "V", "G", "D", "Dj", "E", "Zh", "Z", "I", "J", "K", "L", "Lj", "M",
-    "N", "Nj", "O", "P", "R", "S", "T", "Ch", "U", "F", "H", "C", "Ch", "Dz", "Sh"]
+tanjug_latin_list = [
+    "a", "b", "v", "g", "d", "dj", "e", "zz", "z", "i", "j", "k", "l", "lj", "m",
+    "n", "nj", "o", "p", "r", "s", "t", "cc", "u", "f", "h", "c", "ch", "dzz", "ss",
+    "A", "B", "V", "G", "D", "Dj", "E", "Zz", "Z", "I", "J", "K", "L", "Lj", "M",
+    "N", "Nj", "O", "P", "R", "S", "T", "Cc", "U", "F", "H", "C", "Ch", "Dzz", "Ss"]
 
 
 def create_dict(keys, values):
@@ -49,10 +50,10 @@ def create_dict(keys, values):
 def create_c2l_dict(alphabet):
     if alphabet == "lat":
         return create_dict(srb_cyrillic_list, srb_latin_list)
-    elif alphabet == "eng":
-        return create_dict(srb_cyrillic_list, eng_latin_list)
-    elif alphabet == "eng2":
-        return create_dict(srb_cyrillic_list, eng2_latin_list)
+    elif alphabet == "ascii":
+        return create_dict(srb_cyrillic_list, ascii_latin_list)
+    elif alphabet == "tanjug":
+        return create_dict(srb_cyrillic_list, tanjug_latin_list)
     else:
         raise RuntimeError("Unknown latin alphabet: %s" % alphabet)
 
@@ -92,6 +93,17 @@ def ensure_dir(path):
     os.makedirs(path)
 
 
+def transliteration_table(alphabet):
+    c2l = C2L(alphabet)
+    from_list = [ "ђ", "ж", "ћ", "ч", "џ", "ш", "љ", "њ" ]
+    print("\t".join(["Cyrillic", alphabet]))
+    for from_char in from_list:
+        from_char_upper = from_char.upper()
+        to_char = c2l.conv_char(from_char)
+        to_char_upper = c2l.conv_char(from_char_upper)
+        print("\t".join(["%s / %s" % (from_char, from_char_upper), "%s / %s" % (to_char, to_char_upper) ]) )
+
+
 def convert_dir(in_dir, out_dir, c2l):
     ensure_dir(out_dir)
     for filename in os.listdir(in_dir):
@@ -105,6 +117,11 @@ if __name__ == "__main__":
 
     # create converter
     c2l = C2L(args.alphabet)
+
+    # debug mode where we report transliteration tables
+    if args.transliteration_table:
+        transliteration_table(args.alphabet)
+        exit()
 
     if args.in_dir:
         # we are asked to convert all files in the directory

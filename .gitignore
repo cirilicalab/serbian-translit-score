@@ -2,6 +2,8 @@
 lat/
 eng/
 eng2/
+ascii/
+tanjug/
 
 # ignore vscode stuff
 .vscode/

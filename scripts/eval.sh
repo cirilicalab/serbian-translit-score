@@ -66,8 +66,8 @@ function eval_all_alphabets()
     dataset=$2
 
     eval ${trans_tool} ${dataset} "lat"
-    eval ${trans_tool} ${dataset} "eng"
-    eval ${trans_tool} ${dataset} "eng2"
+    eval ${trans_tool} ${dataset} "ascii"
+    eval ${trans_tool} ${dataset} "tanjug"
 }
 
 function eval_all_datasets_and_alphabets()

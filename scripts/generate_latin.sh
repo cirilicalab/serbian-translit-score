@@ -43,8 +43,8 @@ function process_dataset()
     echo ${dataset_dir}
 
     gen_latin_text ${dataset_dir} lat
-    gen_latin_text ${dataset_dir} eng
-    gen_latin_text ${dataset_dir} eng2
+    gen_latin_text ${dataset_dir} ascii
+    gen_latin_text ${dataset_dir} tanjug
 }
 
 for dataset_dir in ${root_dir}/*; do
