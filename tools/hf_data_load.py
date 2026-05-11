@@ -25,7 +25,7 @@ def load_txt_from_dataset(name, out_dir, text_field, fname_field):
     os.makedirs(target_dir, exist_ok=True)
 
     # load dataset from Hugging Face (lazy)
-    dataset = load_dataset(name, split="train", streaming=True) 
+    dataset = load_dataset(name, split="test", streaming=True) 
 
     # iterate over dataset and write each text to a file
     for i, item in enumerate(dataset):
