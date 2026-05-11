@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     nodejs \
     npm \
     parallel \
+    golang-go \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install --break-system-packages --no-cache-dir \
@@ -20,6 +21,11 @@ RUN pip3 install --break-system-packages --no-cache-dir \
     srtools==0.1.13 \
     cyrtranslit \
     git+https://github.com/Serbian-AI-Society/SrbAI.git
+
+COPY ./scripts /tmp/scripts
+
+RUN ./tmp/scripts/eevan78_translit.sh
+
 
 
 # Set default command
