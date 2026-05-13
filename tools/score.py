@@ -124,7 +124,7 @@ def dir_counts(exp_dir, act_dir, file2seq_func):
         act_path = os.path.join(act_dir, filename)
         
         if not os.path.isfile(act_path):
-            sys.stderr("Skipping file because no transcription was found: %s" % filename)
+            sys.stderr.write("Skipping file because no transcription was found: %s" % filename)
             continue
 
         counts = file_counts(exp_path, act_path, file2seq_func)
