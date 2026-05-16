@@ -1,0 +1,12 @@
+all.txt
+dev.txt
+news_dev
+news_test
+reddit_dev
+reddit_test
+tiny
+tiny_list.txt
+wiki_dev
+wiki_test
+znanje_dev
+znanje_test

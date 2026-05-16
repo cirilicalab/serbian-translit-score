@@ -24,7 +24,51 @@ def parse_args():
                         help="Selects scoring mode. Use 'file' to score individual files, use 'dir' to score all files within directory")
     parser.add_argument("-a", "--act", required=False, help="Path to actual transliterator output.")
     parser.add_argument("-e", "--exp", required=False, help="Path to expected output.")
+    parser.add_argument("-wa", "--word-alignment", required=False, help="Path to word alignment output file.")
     return parser.parse_args()
+
+
+class LogEdits:
+    """ Logs errors in alignment """
+    def __init__(self, log_stream):
+        self._log_stream = log_stream
+        self._test_filename = None
+        self._log_row("File", "Op", "Exp Idx", "Act Idx", "Exp Word", "Act Word")
+    
+    def set_test_filename(self, test_filename):
+        self._test_filename = test_filename
+
+    def _log_row(self, filename, name, exp_idx, act_idx, exp_token, act_token):
+        row = [filename, name, exp_idx, act_idx, exp_token, act_token]
+        line = "\t".join(row)
+        self._log_stream.write(line + "\n")
+        # sys.stderr.write(line + "\n")
+
+    def log_one_op(self, exp, act, edit_op):
+        """Writes one edit op to log file"""
+
+        # decode op
+        name, exp_idx, act_idx = edit_op
+        if name == "insert":
+            name = "I"
+            exp_token = ""
+            act_token = act[act_idx]
+        elif name == "replace":
+            name = "S"
+            exp_token = exp[exp_idx]
+            act_token = act[act_idx]
+        elif name == "delete":
+            name = "D"
+            exp_token = exp[exp_idx]
+            act_token = ""
+        else:
+            assert False, "Unknown operation name"
+
+        self._log_row(self._test_filename, name, str(exp_idx), str(act_idx), exp_token, act_token)
+
+    def log_edit_ops(self, exp, act, edit_ops):
+        for edit_op in edit_ops:
+            self.log_one_op(exp, act, edit_op)
 
 
 class EditCounts:
@@ -74,13 +118,15 @@ def edit_ops_to_counts(seq_len, edit_ops, counts: EditCounts):
             assert False, "Unknown operation name"
 
 
-def update_counts(exp, act, counts):
+def update_counts(exp, act, counts: EditCounts, log_edits: LogEdits = None):
     """
     Computes EditCounts between transliteration output and expected sequence. 
     
     Works for both char edit counts and word edit counts
     """
     edit_ops = Levenshtein.editops(exp, act)
+    if log_edits:
+        log_edits.log_edit_ops(exp, act, edit_ops)
     edit_ops_to_counts(len(exp), edit_ops, counts)
 
 
@@ -96,18 +142,24 @@ def file2words(path):
         return file.read().split()
 
 
-def file_counts(exp_path, act_path, file2seq_func):
+def file_counts(exp_path, act_path, file2seq_func, log_edits: LogEdits):
     """
     Computes EditCounts for pair of transliterator output file and expected file
     """
     act = file2seq_func(act_path)
     exp = file2seq_func(exp_path)
+
+    if log_edits:
+        assert os.path.basename(act_path) == os.path.basename(exp_path)
+        log_edits.set_test_filename(os.path.basename(exp_path))
+    
     counts = EditCounts()
-    update_counts(exp, act, counts)
+    update_counts(exp, act, counts, log_edits)
+
     return counts
 
 
-def dir_counts(exp_dir, act_dir, file2seq_func):
+def dir_counts(exp_dir, act_dir, file2seq_func, log_edits: LogEdits = None):
     """
     Scans directories and computes EditCounts for each pair of trans/exp files that is found.
     Returns list of (filename, EditCounts) tuples.
@@ -127,7 +179,7 @@ def dir_counts(exp_dir, act_dir, file2seq_func):
             sys.stderr.write("Skipping file because no transcription was found: %s" % filename)
             continue
 
-        counts = file_counts(exp_path, act_path, file2seq_func)
+        counts = file_counts(exp_path, act_path, file2seq_func, log_edits)
         results.append((filename, counts))
 
     return results    
@@ -181,7 +233,7 @@ def print_result(word_counts, char_counts, print_col_names=True, print_results=T
         print("\t".join(col_values))
 
 
-def file_mode(exp_path, act_path):
+def file_mode(exp_path, act_path, log_edits: LogEdits):
     if g_output_level > 0:
         sys.stderr.write("Compare files")
         sys.stderr.write("    act: %s" % act_path)
@@ -190,13 +242,13 @@ def file_mode(exp_path, act_path):
 
     # compute counts
     char_counts = file_counts(act_path, exp_path, file2str)
-    word_counts = file_counts(act_path, exp_path, file2words)
+    word_counts = file_counts(act_path, exp_path, file2words, log_edits)
 
     # output result
     print_result(word_counts, char_counts)
 
 
-def dir_mode(exp_dir, act_dir):
+def dir_mode(exp_dir, act_dir, log_edits: LogEdits):
     global g_output_level
     if g_output_level > 0:
         sys.stderr.write("Compare files")
@@ -206,7 +258,7 @@ def dir_mode(exp_dir, act_dir):
 
     # compute counts
     file_and_char_counts_list = dir_counts(exp_dir, act_dir, file2str)
-    file_and_word_counts_list = dir_counts(exp_dir, act_dir, file2words)
+    file_and_word_counts_list = dir_counts(exp_dir, act_dir, file2words, log_edits)
 
     # cumulate counts
     total_char_counts = summarize_counts([counts for _, counts in file_and_char_counts_list])
@@ -216,16 +268,25 @@ def dir_mode(exp_dir, act_dir):
     print_result(total_word_counts, total_char_counts)
 
 
+def open_log_stream(word_alignment_path):
+    if word_alignment_path:
+        return open(word_alignment_path, "w", encoding="utf-8")
+    else:
+        return open(os.devnull, "w", encoding="utf-8")
+
 
 if __name__ == "__main__":
     args = parse_args()
 
+    log_stream = open_log_stream(args.word_alignment)
+    log_edits = LogEdits(log_stream)
+
     if args.mode == "file":
-        file_mode(args.exp, args.act)
+        file_mode(args.exp, args.act, log_edits)
         exit()
 
     if args.mode == "dir":
-        dir_mode(args.exp, args.act)
+        dir_mode(args.exp, args.act, log_edits)
         exit()
 
     if args.mode == "title":

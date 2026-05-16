@@ -1,0 +1,4 @@
+news_dev
+reddit_dev
+wiki_dev
+znanje_dev

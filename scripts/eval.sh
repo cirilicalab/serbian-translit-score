@@ -15,8 +15,10 @@ results_file=${out_root}/results.tsv
 results_file_github=${out_root}/results.md
 score="python3 ${tools_dir}/score.py"
 
-dataset_list=list.txt
-# dataset_list=tiny_list.txt
+dataset_list=all.txt
+# dataset_list=tiny.txt
+
+no_eval=true
 
 #
 # Evaluate 1 transliterator on 1 dataset in 1 latin alphabet
@@ -34,7 +36,8 @@ function eval()
     in_dir=${dataset_dir}/${alphabet}
 
     # get output dir name
-    out_dir=${out_root}/${trans_tool}/${dataset}/${alphabet}
+    dataset_out=${out_root}/${trans_tool}/${dataset}
+    out_dir=${dataset_out}/${alphabet}
 
     # get expected dir with expected cyrillic output
     exp_dir=${dataset_dir}/cyr
@@ -42,20 +45,22 @@ function eval()
     # get list of all input files
     files=$(find ${in_dir} -mindepth 1 -type f -printf "%P\n")
 
-    # ensure output dir exists and is empty
-    rm -rf ${out_dir}
-    mkdir -p ${out_dir}
+    if [ "$no_eval" == false ] ; then
+        # ensure output dir exists and is empty
+        rm -rf ${out_dir}
+        mkdir -p ${out_dir}
 
-    # transliterate all files
-    # for file in ${files}; do
-    #     ${script_dir}/translit/${trans_tool}.sh ${in_dir}/${file} ${out_dir}/${file}
-    # done
-    parallel -j +100 --will-cite "${script_dir}/translit/${trans_tool}.sh ${in_dir}/{} ${out_dir}/{}" ::: ${files}
+        # transliterate all files
+        # for file in ${files}; do
+        #     ${script_dir}/translit/${trans_tool}.sh ${in_dir}/${file} ${out_dir}/${file}
+        # done
+        parallel -j +100 --will-cite "${script_dir}/translit/${trans_tool}.sh ${in_dir}/{} ${out_dir}/{}" ::: ${files}
+    fi
 
-    ${score} dir --act ${out_dir} --exp ${exp_dir} >> ${out_dir}/results_${alphabet}.txt
+    ${score} dir --act ${out_dir} --exp ${exp_dir} --word-alignment ${dataset_out}/word_alignment_${alphabet}.tsv >> ${dataset_out}/results_${alphabet}.txt
 
     # prepare line for file with all results
-    result_line=$(cat ${out_dir}/results_${alphabet}.txt | tail -1)
+    result_line=$(cat ${dataset_out}/results_${alphabet}.txt | tail -1)
 
     printf "${trans_tool}\t${dataset}\t${alphabet}\t${result_line}\n" >> ${results_file}
 }
@@ -98,16 +103,16 @@ col_names=$(${score} title)
 printf "tool\tdataset\talphabet\t${col_names}\n" > ${results_file}
 
 # evaluate all
-# eval_all_datasets_and_alphabets andrejr_srtools
-# eval_all_datasets_and_alphabets serbian_ai_society_srbai
-# eval_all_datasets_and_alphabets turanjanin_cyrilizer
-# eval_all_datasets_and_alphabets artbit_yuconv
-# eval_all_datasets_and_alphabets exvorn_srb_translit
-# eval_all_datasets_and_alphabets ivebe_cyrlatconv
-# eval_all_datasets_and_alphabets pionir_preslovljavac
-# eval_all_datasets_and_alphabets raleksandar_pravopis
-# eval_all_datasets_and_alphabets turanjanin_sr_trans
-# eval_all_datasets_and_alphabets filiparag_translitrs
+eval_all_datasets_and_alphabets andrejr_srtools
+eval_all_datasets_and_alphabets serbian_ai_society_srbai
+eval_all_datasets_and_alphabets turanjanin_cyrilizer
+eval_all_datasets_and_alphabets artbit_yuconv
+eval_all_datasets_and_alphabets exvorn_srb_translit
+eval_all_datasets_and_alphabets ivebe_cyrlatconv
+eval_all_datasets_and_alphabets pionir_preslovljavac
+eval_all_datasets_and_alphabets raleksandar_pravopis
+eval_all_datasets_and_alphabets turanjanin_sr_trans
+eval_all_datasets_and_alphabets filiparag_translitrs
 eval_all_datasets_and_alphabets turanjanin_sr_lang_tools
 eval_all_datasets_and_alphabets turanjanin_sr_lang_tools_ascii
 eval_all_datasets_and_alphabets eevan78_translit

@@ -1,3 +1,8 @@
-news/
-wiki/
-znanje/
+news_dev/
+news_test/
+reddit_dev/
+reddit_test/
+wiki_dev/
+wiki_test/
+znanje_dev/
+znanje_test/
