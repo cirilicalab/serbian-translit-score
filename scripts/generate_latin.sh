@@ -47,14 +47,6 @@ function process_dataset()
     gen_latin_text ${dataset_dir} tanjug
 }
 
-
-# while read dataset_name; do
-#     # add line end if it's missing. some transliterator's have issues with handling files without line end
-#     dataset_dir=${root_dir}/${dataset_name}
-#     process_dataset ${dataset_dir}
-# done < ${root_dir}/all.txt
-
-
 for dir in ${root_dir}/*/; do
     # Remove the trailing slash if you want the pure directory name
     dataset_name=$(basename ${dir})
