@@ -88,11 +88,9 @@ col_names=$(${score} title)
 printf "tool\tdataset\talphabet\t${col_names}\n" > ${results_file}
 
 # evaluate all
-eval_all_datasets_and_alphabets srtools
-eval_all_datasets_and_alphabets cyrtranslit
-eval_all_datasets_and_alphabets srbai
-eval_all_datasets_and_alphabets cyrilizer
-eval_all_datasets_and_alphabets cyrilizer_ms
+eval_all_datasets_and_alphabets ajdrejr_srtools
+eval_all_datasets_and_alphabets serbian_ai_society_srbai
+eval_all_datasets_and_alphabets turanjanin_cyrilizer
 eval_all_datasets_and_alphabets eevan78_translit
 eval_all_datasets_and_alphabets artbit_yuconv
 eval_all_datasets_and_alphabets exvorn_srb_translit
