@@ -18,6 +18,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     php-json \
     php-curl \
     php-zip \
+    php-intl \
+    php-sqlite3 \
     unzip \
     curl \
     pkg-config \
@@ -50,7 +52,9 @@ ENV NODE_PATH=/usr/local/lib/node_modules
 
 # PHP transliteration
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN composer require turanjanin/serbian-transliterator
+RUN composer require \
+    turanjanin/serbian-transliterator \
+    turanjanin/serbian-language-tools
 
 
 # Rust transliteration

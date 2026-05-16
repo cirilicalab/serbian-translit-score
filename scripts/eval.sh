@@ -15,8 +15,8 @@ results_file=${out_root}/results.tsv
 results_file_github=${out_root}/results.md
 score="python3 ${tools_dir}/score.py"
 
-# dataset_list=list.txt
-dataset_list=tiny_list.txt
+dataset_list=list.txt
+# dataset_list=tiny_list.txt
 
 #
 # Evaluate 1 transliterator on 1 dataset in 1 latin alphabet
@@ -26,8 +26,6 @@ function eval()
     trans_tool=$1
     dataset=$2
     alphabet=$3
-
-    # print "Evaluate: ${trans_tool} on ${dataset} - ${alphabet} "
 
     # get dataset root dir
     dataset_dir=${data_root}/${dataset}
@@ -68,7 +66,7 @@ function eval_with_time()
     trans_tool=$1
     dataset=$2
     alphabet=$3
-    export TIMEFORMAT="Evaluate: (${dataset} - ${alphabet} "'%R'
+    export TIMEFORMAT="    eval ${dataset} (${alphabet}):  "'%R seconds'
     time eval ${trans_tool} ${dataset} "lat"
 }
 
@@ -77,8 +75,8 @@ function eval_all_alphabets()
     trans_tool=$1
     dataset=$2
 
-    time eval_with_time ${trans_tool} ${dataset} "lat"
-    time eval_with_time ${trans_tool} ${dataset} "ascii"
+    eval_with_time ${trans_tool} ${dataset} "lat"
+    eval_with_time ${trans_tool} ${dataset} "ascii"
     # eval_with_time ${trans_tool} ${dataset} "tanjug"
 }
 
@@ -100,17 +98,19 @@ col_names=$(${score} title)
 printf "tool\tdataset\talphabet\t${col_names}\n" > ${results_file}
 
 # evaluate all
-eval_all_datasets_and_alphabets andrejr_srtools
-eval_all_datasets_and_alphabets serbian_ai_society_srbai
-eval_all_datasets_and_alphabets turanjanin_cyrilizer
+# eval_all_datasets_and_alphabets andrejr_srtools
+# eval_all_datasets_and_alphabets serbian_ai_society_srbai
+# eval_all_datasets_and_alphabets turanjanin_cyrilizer
+# eval_all_datasets_and_alphabets artbit_yuconv
+# eval_all_datasets_and_alphabets exvorn_srb_translit
+# eval_all_datasets_and_alphabets ivebe_cyrlatconv
+# eval_all_datasets_and_alphabets pionir_preslovljavac
+# eval_all_datasets_and_alphabets raleksandar_pravopis
+# eval_all_datasets_and_alphabets turanjanin_sr_trans
+# eval_all_datasets_and_alphabets filiparag_translitrs
+eval_all_datasets_and_alphabets turanjanin_sr_lang_tools
+eval_all_datasets_and_alphabets turanjanin_sr_lang_tools_ascii
 eval_all_datasets_and_alphabets eevan78_translit
-eval_all_datasets_and_alphabets artbit_yuconv
-eval_all_datasets_and_alphabets exvorn_srb_translit
-eval_all_datasets_and_alphabets ivebe_cyrlatconv
-eval_all_datasets_and_alphabets pionir_preslovljavac
-eval_all_datasets_and_alphabets raleksandar_pravopis
-eval_all_datasets_and_alphabets turanjanin_php_trans
-eval_all_datasets_and_alphabets filiparag_translitrs
 
 # format output table as github markdown
 cat ${results_file} | tabulate --header -f github > ${results_file_github}

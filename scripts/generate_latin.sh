@@ -47,6 +47,11 @@ function process_dataset()
     gen_latin_text ${dataset_dir} tanjug
 }
 
-for dataset_dir in ${root_dir}/*; do
+
+while read dataset_name; do
+    # add line end if it's missing. some transliterator's have issues with handling files without line end
+    dataset_dir=${root_dir}/${dataset_name}
+    find ${dataset_dir}/cyr -type f | xargs -I {} ${script_dir}/ensure_line_end.sh {}
     process_dataset ${dataset_dir}
-done
+done < ${root_dir}/list.txt
+
