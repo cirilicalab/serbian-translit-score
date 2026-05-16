@@ -15,8 +15,8 @@ results_file=${out_root}/results.tsv
 results_file_github=${out_root}/results.md
 score="python3 ${tools_dir}/score.py"
 
-dataset_list=list.txt
-
+# dataset_list=list.txt
+dataset_list=tiny_list.txt
 
 #
 # Evaluate 1 transliterator on 1 dataset in 1 latin alphabet
@@ -27,7 +27,7 @@ function eval()
     dataset=$2
     alphabet=$3
 
-    echo "Evaluate: ${trans_tool} on ${dataset} dataset with ${alphabet} alphabet."
+    # print "Evaluate: ${trans_tool} on ${dataset} - ${alphabet} "
 
     # get dataset root dir
     dataset_dir=${data_root}/${dataset}
@@ -62,24 +62,34 @@ function eval()
     printf "${trans_tool}\t${dataset}\t${alphabet}\t${result_line}\n" >> ${results_file}
 }
 
+
+function eval_with_time()
+{
+    trans_tool=$1
+    dataset=$2
+    alphabet=$3
+    export TIMEFORMAT="Evaluate: (${dataset} - ${alphabet} "'%R'
+    time eval ${trans_tool} ${dataset} "lat"
+}
+
 function eval_all_alphabets()
 {
     trans_tool=$1
     dataset=$2
 
-    eval ${trans_tool} ${dataset} "lat"
-    eval ${trans_tool} ${dataset} "ascii"
-    # eval ${trans_tool} ${dataset} "tanjug"
+    time eval_with_time ${trans_tool} ${dataset} "lat"
+    time eval_with_time ${trans_tool} ${dataset} "ascii"
+    # eval_with_time ${trans_tool} ${dataset} "tanjug"
 }
 
 function eval_all_datasets_and_alphabets()
 {
     trans_tool=$1
-
-    for dataset_dir in ${data_root}/*; do
-        dataset_name=$(basename ${dataset_dir})
-        time eval_all_alphabets ${trans_tool} ${dataset_name}
-    done
+    echo ""
+    echo "$trans_tool"
+    while read dataset_name; do
+        eval_all_alphabets ${trans_tool} ${dataset_name}
+    done < ${data_root}/${dataset_list}
 }
 
 # make sure that we have output dir
@@ -90,7 +100,7 @@ col_names=$(${score} title)
 printf "tool\tdataset\talphabet\t${col_names}\n" > ${results_file}
 
 # evaluate all
-eval_all_datasets_and_alphabets ajdrejr_srtools
+eval_all_datasets_and_alphabets andrejr_srtools
 eval_all_datasets_and_alphabets serbian_ai_society_srbai
 eval_all_datasets_and_alphabets turanjanin_cyrilizer
 eval_all_datasets_and_alphabets eevan78_translit
