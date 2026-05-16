@@ -67,7 +67,7 @@ function eval_with_time()
     dataset=$2
     alphabet=$3
     export TIMEFORMAT="    eval ${dataset} (${alphabet}):  "'%R seconds'
-    time eval ${trans_tool} ${dataset} "lat"
+    time eval ${trans_tool} ${dataset} ${alphabet}
 }
 
 function eval_all_alphabets()
