@@ -18,7 +18,7 @@ score="python3 ${tools_dir}/score.py"
 dataset_list=all.txt
 # dataset_list=tiny.txt
 
-disable_eval=false
+run_eval=true
 
 #
 # Evaluate 1 transliterator on 1 dataset in 1 latin alphabet
@@ -45,7 +45,7 @@ function eval()
     # get list of all input files
     files=$(find ${in_dir} -mindepth 1 -type f -printf "%P\n")
 
-    if [ "$disable_eval" == false ] ; then
+    if [ "$run_eval" == true ] ; then
         # ensure output dir exists and is empty
         rm -rf ${out_dir}
         mkdir -p ${out_dir}
