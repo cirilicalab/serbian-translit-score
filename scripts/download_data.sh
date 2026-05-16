@@ -29,3 +29,5 @@ wget -qO - https://huggingface.co/datasets/procesaur/cirilica/resolve/main/sr_zn
 # reddit
 wget -qO - https://huggingface.co/datasets/procesaur/cirilica/resolve/main/sr_reddit_dev.jsonl | python3 tools/hf_unpack.py --output ${data_root}/reddit_dev/cyr
 wget -qO - https://huggingface.co/datasets/procesaur/cirilica/resolve/main/sr_reddit_test.jsonl | python3 tools/hf_unpack.py --output ${data_root}/reddit_test/cyr
+
+find ${data_root}/ -type f | xargs -I {} ${script_dir}/ensure_line_end.sh {}
