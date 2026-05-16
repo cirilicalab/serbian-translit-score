@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# This is wrapper script for Python cyrtranslit module
+# This is wrapper script for Python srtools module
 # https://andrejr.gitlab.io/srtools/
 #
 

@@ -1,10 +1,10 @@
 #!/bin/bash
 
 #
-# Wrapper script for Jovan Turnjanin's cyrilizer with Mihajlo's improvements:
-# https://raw.githubusercontent.com/procesaur/cirilizator/refs/heads/master/scripts/content.js
+# Wrapper script for Jovan Turnjanin's cyrilizer:
+# https://github.com/turanjanin/cirilizator/blob/master/scripts/content.js
 #
-content_url="https://raw.githubusercontent.com/procesaur/cirilizator/refs/heads/master/scripts/content.js"
+content_url="https://raw.githubusercontent.com/turanjanin/cirilizator/7e0d75027442cf39bd2af3fa0f8c0379e9821d82/scripts/content.js"
 
 # Check exactly two arguments
 if [ $# -ne 2 ]; then
@@ -20,9 +20,9 @@ in_file=$1
 out_file=$2
 
 script_dir=$(dirname "$0")
-cyrilizer_wrapper_script=${script_dir}/cyrilizer.js
+cyrilizer_wrapper_script=${script_dir}/turanjanin_cyrilizer.js
 
-content_dir=/tmp/cyrilizer_ms
+content_dir=/tmp/cyrilizer
 content_path=${content_dir}/content.js
 
 # Download cyrilizer only if doesn't exist
