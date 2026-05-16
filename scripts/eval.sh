@@ -15,6 +15,8 @@ results_file=${out_root}/results.tsv
 results_file_github=${out_root}/results.md
 score="python3 ${tools_dir}/score.py"
 
+dataset_list=list.txt
+
 
 #
 # Evaluate 1 transliterator on 1 dataset in 1 latin alphabet
@@ -67,7 +69,7 @@ function eval_all_alphabets()
 
     eval ${trans_tool} ${dataset} "lat"
     eval ${trans_tool} ${dataset} "ascii"
-    eval ${trans_tool} ${dataset} "tanjug"
+    # eval ${trans_tool} ${dataset} "tanjug"
 }
 
 function eval_all_datasets_and_alphabets()
