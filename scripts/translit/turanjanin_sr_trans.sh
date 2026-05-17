@@ -20,4 +20,4 @@ out_file=$2
 
 script_dir=$(dirname "$0")
 
-php ${script_dir}/turanjanin_php_trans.php ${in_file} > ${out_file}
+php ${script_dir}/turanjanin_sr_trans.php ${in_file} > ${out_file}
