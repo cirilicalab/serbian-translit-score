@@ -32,7 +32,8 @@ RUN pip3 install --break-system-packages --no-cache-dir \
     tabulate==0.10.0 \
     srtools==0.1.13 \
     cyrtranslit \
-    git+https://github.com/Serbian-AI-Society/SrbAI.git
+    git+https://github.com/Serbian-AI-Society/SrbAI.git \
+    xlsxwriter
 
 COPY ./scripts /tmp/scripts
 

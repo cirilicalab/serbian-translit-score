@@ -133,13 +133,12 @@ def update_counts(exp, act, counts: EditCounts, log_edits: LogEdits = None):
 def file2str(path):
     """Reads entire file into string"""
     with open(path, 'r', encoding='utf-8') as file:
-        return file.read()
+        return file.read().replace('\u00ad', '').replace('\u200c', '')
 
 
 def file2words(path):
     """Reads file into list of words."""
-    with open(path, 'r', encoding='utf-8') as file:
-        return file.read().split()
+    return file2str(path).split()
 
 
 def file_counts(exp_path, act_path, file2seq_func, log_edits: LogEdits):
