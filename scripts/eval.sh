@@ -15,14 +15,6 @@ dataset_list=all.txt
 # make sure that we have output dir
 mkdir -p ${out_root}
 
-
-# add row with column names to results summary TSV table
-# col_names=$(${score} title)
-# printf "tool\tdataset\talphabet\t${col_names}\n" > ${results_file}
-
-# evaluate all
-# ${script_dir}/eval_one.sh turanjanin_cyrilizer ${dataset_list}
-
 sem -j 16 ${script_dir}/eval_one.sh turanjanin_cyrilizer ${dataset_list}
 sem -j 16 ${script_dir}/eval_one.sh andrejr_srtools ${dataset_list}
 sem -j 16 ${script_dir}/eval_one.sh serbian_ai_society_srbai ${dataset_list}
@@ -39,6 +31,3 @@ sem -j 16 ${script_dir}/eval_one.sh eevan78_translit ${dataset_list}
 
 # wait for jobs to finish
 sem --wait
-
-# format output table as github markdown
-# cat ${results_file} | tabulate --header -f github > ${results_file_github}

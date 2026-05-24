@@ -14,13 +14,7 @@ script_dir=$(dirname "$0")
 data_root=${script_dir}/../datasets
 out_root=${script_dir}/../out
 tools_dir=${script_dir}/../tools
-# results_file=${out_root}/results.tsv
-# results_file_github=${out_root}/results.md
 score="python3 ${tools_dir}/score.py"
-
-# dataset_list=all.txt
-# dataset_list=tiny.txt
-
 
 run_eval=true
 
@@ -105,4 +99,4 @@ function eval_all_datasets_and_alphabets()
 mkdir -p ${out_root}
 
 # evaluate the transliterator
-eval_all_datasets_and_alphabets $transliterator > ${out_root}/stdout_${transliterator}.txt 2> stderr_${transliterator}.txt
+eval_all_datasets_and_alphabets $transliterator > ${out_root}/stdout_${transliterator}.txt 2> ${out_root}/stderr_${transliterator}.txt
