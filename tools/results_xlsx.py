@@ -219,7 +219,7 @@ if __name__ == "__main__":
 
         # one worksheet per alphabet
         ws = wb.add_worksheet(alphabet.upper() + " " + "TEST")
-        fill_alphabet_worksheet(alphabet_results, dev_sets, ws)
+        fill_alphabet_worksheet(alphabet_results, test_sets, ws)
         ws.autofit()
 
     # Close to save
