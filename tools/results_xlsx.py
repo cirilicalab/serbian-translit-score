@@ -152,7 +152,7 @@ def fill_alphabet_worksheet(alphabet_results, datasets, ws):
         total = cumulate_dataset_results(total, dataset_table)
 
     # divide to get macro average table
-    divide_total(total, len(dataset))
+    divide_total(total, len(datasets))
 
     # output macro average table
     fill_dataset_cells(total, "MACRO AVG", 0, 5, ws)
@@ -174,6 +174,81 @@ def split_datasets(datasets):
             assert False, "Unsupported dataset name format: %s" % dataset
     return test_sets, dev_sets
 
+def split_dev_test(table):
+    dev_table = [table[0]]
+    test_table = [table[0]]
+    for row in table[1:]:
+        dataset = row[0]
+        dataset_name, dataset_type = dataset.split("_")
+        
+        new_row = [dataset_name]
+        new_row.extend(row[1:])
+        
+        if dataset_type == "dev":
+            dev_table.append(new_row)
+        elif dataset_type == "test":
+            test_table.append(new_row)
+        else:
+            assert False, "Unsupported dataset type: %s" % dataset
+
+    return dev_table, test_table
+
+def concat_dev_test(dev_table, test_table):
+    # column names
+    assert dev_table[0][0] == test_table[0][0]
+    table = [dev_table[0]]
+    table[0].extend(test_table[0][1:])
+
+    for dev_row in dev_table[1:]:
+        grep_out = grep(test_table, "dataset", dev_row[0])
+        assert len(grep_out) == 2, str(grep_out)
+        test_row = grep_out[1]
+
+        out_row = dev_row
+        out_row.extend(test_row[1:])
+        assert len(table[-1]) == len(out_row)
+        
+        table.append(out_row)
+
+    return table
+
+
+def fill_tool_cells(tool_table, ws):
+    global bold_format
+    global bold_centered_format
+
+    row_idx = 0
+    # ws.write(row_idx, 1, "dev", bold_format)
+    # ws.write(row_idx, 3, "test", bold_format)
+    ws.merge_range(row_idx, 1, row_idx, 2, "dev", bold_format)
+    ws.merge_range(row_idx, 3, row_idx, 4, "test", bold_format)
+
+    row_idx += 1
+    ws.write(row_idx, 0, "dataset", bold_format)
+    ws.write(row_idx, 1, "wer", bold_centered_format)
+    ws.write(row_idx, 2, "cer", bold_centered_format)
+    ws.write(row_idx, 3, "wer", bold_centered_format)
+    ws.write(row_idx, 4, "cer", bold_centered_format)
+
+    row_idx += 1
+    for dataset, wer_dev, cer_dev, wer_test, cer_test in tool_table[1:]:
+        ws.write(row_idx, 0, dataset, normal_format)
+        ws.write(row_idx, 1, float(wer_dev), centered_format)
+        ws.write(row_idx, 2, float(cer_dev), centered_format)
+        ws.write(row_idx, 3, float(wer_test), centered_format)
+        ws.write(row_idx, 4, float(cer_test), centered_format)
+        row_idx += 1
+
+
+def fill_tool_worksheet(tool, results, alphabet, ws):
+    tool_results = grep(results, "tool", tool)
+    alphabet_results = grep(tool_results, "alphabet", alphabet)
+    tool_table = cut(alphabet_results, ["dataset", "wer", "cer"])
+
+    tool_dev, tool_test = split_dev_test(tool_table)
+    reshaped_tool_table = concat_dev_test(tool_dev, tool_test)
+
+    fill_tool_cells(reshaped_tool_table, ws)
 
 
 if __name__ == "__main__":
@@ -207,6 +282,10 @@ if __name__ == "__main__":
     bold_format = wb.add_format({'bold': True, 'border': 1})
     global normal_format
     normal_format = wb.add_format({'bold': False, 'border': 1})
+    global bold_centered_format
+    bold_centered_format = wb.add_format({'bold': True, 'border': 1, 'align': 'center'})
+    global centered_format
+    centered_format = wb.add_format({'bold': True, 'border': 1, 'align': 'center'})
 
     for alphabet in alphabets:
         # get results for this alphabet
@@ -222,6 +301,11 @@ if __name__ == "__main__":
         fill_alphabet_worksheet(alphabet_results, test_sets, ws)
         ws.autofit()
 
+    # add best cyrilizer reulsts
+    ws = wb.add_worksheet("Best Cyrilizer".upper())
+    fill_tool_worksheet("turanjanin_cyrilizer", table, "lat", ws)
+    ws.autofit()
+    
     # Close to save
     wb.close()
 
