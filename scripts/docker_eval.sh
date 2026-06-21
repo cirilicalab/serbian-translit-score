@@ -1,6 +1,8 @@
 #!/bin/bash
 
-# Runs evaluation in docker with installed transliteration tools
+#
+# This is just a wrapper script which runs eval.sh in docker.
+#
 
 version=0.0
 script_dir=$(dirname "$0")

@@ -3,7 +3,7 @@
 set -xe
 
 #
-# Runs end to end evaluation of serbian cyrillic 2 latin transliteration tools
+# Runs evaluation of all cyrillic 2 latin transliteration tools 
 #
 
 script_dir=$(dirname "$0")

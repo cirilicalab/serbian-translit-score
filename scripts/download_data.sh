@@ -2,7 +2,9 @@
 
 set -xe
 
-# Downloads datasets
+# 
+# Downloads all datasets
+#
 
 script_dir=$(dirname "$0")
 data_root=${script_dir}/../datasets

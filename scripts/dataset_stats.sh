@@ -2,10 +2,6 @@
 
 set -xe
 
-#
-# Runs end to end evaluation of serbian cyrillic 2 latin transliteration tools
-#
-
 script_dir=$(dirname "$0")
 out_root=${script_dir}/../out
 data_root=${script_dir}/../datasets
